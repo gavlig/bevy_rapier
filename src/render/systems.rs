@@ -92,6 +92,15 @@ fn generate_collider_mesh(co_shape: &ColliderShapeComponent) -> Option<(Mesh, Ve
             subdivisions: 2,
             radius: 1.0,
         }),
+        #[cfg(feature = "dim3")]
+        ShapeType::Cylinder => {
+            let cylinder = co_shape.as_cylinder().unwrap();
+            let mut shape = shape::Capsule::default();
+            shape.depth = cylinder.half_height * 2.0;
+            shape.radius = cylinder.radius;
+
+            Mesh::from(shape)
+        },
         #[cfg(feature = "dim2")]
         ShapeType::TriMesh => {
             let mut mesh =
@@ -193,6 +202,10 @@ fn generate_collider_mesh(co_shape: &ColliderShapeComponent) -> Option<(Mesh, Ve
         ShapeType::Ball => {
             let b = co_shape.as_ball().unwrap();
             Vec3::new(b.radius, b.radius, b.radius)
+        }
+        ShapeType::Cylinder => {
+            let c = co_shape.as_cylinder().unwrap();
+            Vec3::new(c.radius, c.half_height, c.radius)
         }
         ShapeType::TriMesh => Vec3::ONE,
         _ => unimplemented!(),
