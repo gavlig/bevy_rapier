@@ -356,7 +356,7 @@ pub fn apply_rigid_body_user_changes(
 
 pub fn apply_joint_user_changes(
     mut context: ResMut<RapierContext>,
-    changed_impulse_joints: Query<(&RapierImpulseJointHandle, &ImpulseJoint), Changed<RigidBody>>,
+    changed_impulse_joints: Query<(&RapierImpulseJointHandle, &ImpulseJoint), Changed<ImpulseJoint>>,
     changed_multibody_joints: Query<
         (&RapierMultibodyJointHandle, &MultibodyJoint),
         Changed<Transform>,
