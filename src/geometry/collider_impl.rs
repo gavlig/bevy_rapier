@@ -522,11 +522,12 @@ impl Collider {
     /// the shape is approximated by a convex polygon/convex polyhedron using
     /// `num_subdivisions` subdivisions.
     pub fn set_scale(&mut self, scale: Vect, num_subdivisions: u32) {
-        if !self.scale.abs_diff_eq(scale, std::f32::EPSILON) {
+        if scale == self.scale {
             // Nothing to do.
+            return;
         }
 
-        if self.scale.abs_diff_eq(Vect::ONE, std::f32::EPSILON) {
+        if self.scale == Vect::ONE {
             // Trivial case.
             self.raw = self.unscaled.clone();
             self.scale = scale;
