@@ -116,6 +116,7 @@ pub fn apply_collider_user_changes(
         (&RapierColliderHandle, &ActiveCollisionTypes),
         Changed<ActiveCollisionTypes>,
     >,
+    changed_mass_properties: Query<(&RapierColliderHandle, &ColliderMassProperties), Changed<ColliderMassProperties>>,
     changed_friction: Query<(&RapierColliderHandle, &Friction), Changed<Friction>>,
     changed_restitution: Query<(&RapierColliderHandle, &Restitution), Changed<Restitution>>,
     changed_collision_groups: Query<
@@ -158,6 +159,15 @@ pub fn apply_collider_user_changes(
     for (handle, active_collision_types) in changed_active_collision_types.iter() {
         if let Some(co) = context.colliders.get_mut(handle.0) {
             co.set_active_collision_types((*active_collision_types).into())
+        }
+    }
+
+    for (handle_co, mass_props) in changed_mass_properties.iter() {
+        if let Some(co) = context.colliders.get_mut(handle_co.0) {
+            match mass_props {
+                ColliderMassProperties::Density(density) => co.set_density(*density),
+                ColliderMassProperties::MassProperties(_) => (),
+            }
         }
     }
 
