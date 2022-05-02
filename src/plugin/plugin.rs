@@ -66,6 +66,7 @@ pub enum RapierPhysicsSystem {
     DetectDespawn,
     StepSimulation,
     WritebackRigidBodies,
+    WritebackMassProperties,
 }
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, StageLabel)]
@@ -151,6 +152,11 @@ impl<PhysicsHooksData: 'static + WorldQuery + Send + Sync> Plugin
                         systems::writeback_rigid_bodies
                             .label(RapierPhysicsSystem::WritebackRigidBodies)
                             .after(RapierPhysicsSystem::StepSimulation),
+                    )
+                    .with_system(
+                        systems::writeback_mass_properties
+                            .label(RapierPhysicsSystem::WritebackMassProperties)
+                            .after(RapierPhysicsSystem::WritebackRigidBodies)
                     ),
             )
             // NOTE: we run sync_removals at the end of the frame to, in order to make sure we don’t miss any `RemovedComponents`.

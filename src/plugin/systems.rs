@@ -32,6 +32,11 @@ type RigidBodyWritebackComponents<'a> = (
     Option<&'a mut Sleeping>,
 );
 
+type MassPropertiesWritebackComponents<'a> = (
+    Entity,
+    Option<&'a mut MassProperties>,
+);
+
 type RigidBodyComponents<'a> = (
     Entity,
     &'a RigidBody,
@@ -483,6 +488,35 @@ pub fn writeback_rigid_bodies(
                         //       change tracking when the values didn’t change.
                         if sleeping.sleeping != rb.is_sleeping() {
                             sleeping.sleeping = rb.is_sleeping();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn writeback_mass_properties(
+    mut context: ResMut<RapierContext>,
+    config: Res<RapierConfiguration>,
+    mut writeback: Query<MassPropertiesWritebackComponents>,
+) {
+    let context = &mut *context;
+    let scale = context.physics_scale;
+
+    if config.physics_pipeline_active {
+        for (entity, mut mass_props) in
+            writeback.iter_mut()
+        {
+            // TODO: do this the other way round: iterate through Rapier’s RigidBodySet on the active bodies,
+            // and update the components accordingly. That way, we don’t have to iterate through the entities that weren’t changed
+            // by physics (for example because they are sleeping).
+            if let Some(handle) = context.entity2body.get(&entity).copied() {
+                if let Some(rb) = context.bodies.get(handle) {
+                    #[cfg(feature = "dim3")]
+                    {
+                        if let Some(mass_props) = &mut mass_props {
+                            **mass_props = MassProperties::from_rapier(*rb.mass_properties(), scale);
                         }
                     }
                 }
