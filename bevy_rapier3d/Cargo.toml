@@ -32,7 +32,7 @@ enhanced-determinism = [ "rapier3d/enhanced-determinism" ]
 bevy = { version = "0.6", default-features = false }
 nalgebra = { version = "0.30.1", features = [ "convert-glam020" ] }
 # Don't enable the default features because we don't need the ColliderSet/RigidBodySet
-rapier3d = { version = "^0.12.0-alpha.0", default-features = false, features = [ "dim3", "f32" ] }
+rapier3d = { git = "https://github.com/gavlig/rapier.git", branch = "gryazevichki_v0.12.0-alpha.0", default-features = false, features = [ "dim3", "f32" ] }
 
 [dev-dependencies]
 #bevy_wgpu = "0.5"
