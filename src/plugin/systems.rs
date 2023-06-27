@@ -37,6 +37,7 @@ use bevy::math::Vec3Swizzles;
 /// Components that will be updated after a physics step.
 pub type RigidBodyWritebackComponents<'a> = (
     Entity,
+	&'a RigidBody,
     Option<&'a Parent>,
     Option<&'a mut Transform>,
     Option<&'a mut TransformInterpolation>,
@@ -495,9 +496,14 @@ pub fn writeback_rigid_bodies(
     let scale = context.physics_scale;
 
     if config.physics_pipeline_active {
-        for (entity, parent, transform, mut interpolation, mut velocity, mut sleeping) in
+        for (entity, rigid_body, parent, transform, mut interpolation, mut velocity, mut sleeping) in
             writeback.iter_mut()
         {
+			match *rigid_body {
+				RigidBody::Fixed => continue,
+				_ => (),
+			};
+
             // TODO: do this the other way round: iterate through Rapier’s RigidBodySet on the active bodies,
             // and update the components accordingly. That way, we don’t have to iterate through the entities that weren’t changed
             // by physics (for example because they are sleeping).
